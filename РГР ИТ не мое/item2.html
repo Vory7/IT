@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <style media="screen">
+	.img1 {
+	overflow: hidden;
+	height: 300px;
+}
+
+body {
+	background: #F6F6F6;
+}
+img {
+  width: 50%; !important;
+}
+
+h1 {
+	position: absolute;
+	top: 100px;
+	left: 750px;
+	font-family: Arial;
+}
+
+.sim-slider {
+  max-width: 1000px;
+  min-width: 320px;
+  margin: 20px auto;
+  padding: 30px 50px;
+}
+
+/* General styles */
+.sim-slider {
+  position: relative;
+}
+
+.sim-slider-list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  position: relative;
+}
+
+.sim-slider-element {
+  width: 100%;
+  transition: opacity 1s ease-in;
+  opacity: 0;
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  display: block;
+}
+
+    </style>
+  </head\>
+  <body>
+  <h1>мировой<br>рынок<br>продаж</h1>
+<div class="sim-slider">
+     <ul class="sim-slider-list">
+         <li class="sim-slider-element"><img src="smartphone.png" alt="1"></li>
+         <li class="sim-slider-element"><img src="desktop.png" alt="2"></li>
+         <li class="sim-slider-element"><img src="teblet.png" alt="1"></li>
+         <li class="sim-slider-element"><img src="laptop.png" alt="2"></li>
+     </ul>
+     
+<div>
+  </body>
+<script>
+function Sim(sldrId) {
+
+	let id = document.getElementById(sldrId);
+	if(id) {
+		this.sldrRoot = id
+	}
+	else {
+		this.sldrRoot = document.querySelector('.sim-slider')
+	};
+
+	// Carousel objects
+	this.sldrList = this.sldrRoot.querySelector('.sim-slider-list');
+	this.sldrElements = this.sldrList.querySelectorAll('.sim-slider-element');
+	this.sldrElemFirst = this.sldrList.querySelector('.sim-slider-element');
+	this.leftArrow = this.sldrRoot.querySelector('div.sim-slider-arrow-left');
+	this.rightArrow = this.sldrRoot.querySelector('div.sim-slider-arrow-right');
+	this.indicatorDots = this.sldrRoot.querySelector('div.sim-slider-dots');
+
+	// Initialization
+	this.options = Sim.defaults;
+	Sim.initialize(this)
+};
+
+Sim.defaults = {
+
+	// Default options for the carousel
+	loop: true,     // Бесконечное зацикливание слайдера
+	auto: true,     // Автоматическое пролистывание
+	interval: 2000, // Интервал между пролистыванием элементов (мс)
+};
+
+Sim.prototype.elemPrev = function(num) {
+	num = num || 1;
+
+	let prevElement = this.currentElement;
+	this.currentElement -= num;
+	if(this.currentElement < 0) this.currentElement = this.elemCount-1;
+
+	if(!this.options.loop) {
+		if(this.currentElement == 0) {
+			this.leftArrow.style.display = 'none'
+		};
+		this.rightArrow.style.display = 'block'
+	};
+	
+	this.sldrElements[this.currentElement].style.opacity = '1';
+	this.sldrElements[prevElement].style.opacity = '0';
+
+	if(this.options.dots) {
+		this.dotOn(prevElement); this.dotOff(this.currentElement)
+	}
+};
+
+Sim.prototype.elemNext = function(num) {
+	num = num || 1;
+	
+	let prevElement = this.currentElement;
+	this.currentElement += num;
+	if(this.currentElement >= this.elemCount) this.currentElement = 0;
+
+	if(!this.options.loop) {
+		if(this.currentElement == this.elemCount-1) {
+			this.rightArrow.style.display = 'none'
+		};
+		this.leftArrow.style.display = 'block'
+	};
+
+	this.sldrElements[this.currentElement].style.opacity = '1';
+	this.sldrElements[prevElement].style.opacity = '0';
+
+	if(this.options.dots) {
+		this.dotOn(prevElement); this.dotOff(this.currentElement)
+	}
+};
+
+Sim.prototype.dotOn = function(num) {
+	this.indicatorDotsAll[num].style.cssText = 'background-color:#BBB; cursor:pointer;'
+};
+
+Sim.prototype.dotOff = function(num) {
+	this.indicatorDotsAll[num].style.cssText = 'background-color:#556; cursor:default;'
+};
+
+Sim.initialize = function(that) {
+
+	// Constants
+	that.elemCount = that.sldrElements.length; // Количество элементов
+
+	// Variables
+	that.currentElement = 0;
+	let bgTime = getTime();
+
+	// Functions
+	function getTime() {
+		return new Date().getTime();
+	};
+	function setAutoScroll() {
+		that.autoScroll = setInterval(function() {
+			let fnTime = getTime();
+			if(fnTime - bgTime + 10 > that.options.interval) {
+				bgTime = fnTime; that.elemNext()
+			}
+		}, that.options.interval)
+	};
+
+	if(that.elemCount >= 1) {   // показать первый элемент
+		that.sldrElemFirst.style.opacity = '1';
+	};
+
+	if(that.options.auto) {   // инициализация автопрокруки
+		setAutoScroll();
+	};
+
+};
+
+new Sim();
+</script>
+</html>
